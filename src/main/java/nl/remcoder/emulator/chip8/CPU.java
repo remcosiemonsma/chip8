@@ -1,8 +1,5 @@
 package nl.remcoder.emulator.chip8;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -18,7 +15,6 @@ public class CPU {
     private int[] stack = new int[16];
     private int sp = 0;
     private int key = -1;
-    private int lastKeyPressed = 0;
 
     private Random random = new Random();
     
@@ -55,9 +51,7 @@ public class CPU {
         System.arraycopy(chip8_fontset, 0, memory, 0, 80);
     }
 
-    public void loadRom(String location) throws IOException {
-        byte[] romdata = Files.readAllBytes(Paths.get(location));
-
+    public void loadRom(byte[] romdata) {
         for (int i = 0, j = 0x200; i < romdata.length; i++, j++) {
             //Data is stored as unsigned bytes, in Java everything is signed, AND-ing with 0xff effectively removes the sign
             memory[j] = romdata[i] & 0xFF;
@@ -75,68 +69,64 @@ public class CPU {
         System.out.println("Opcode: " + Integer.toHexString(opcode));
 
         switch (opcode >> 12) {
-            case (0x0):
+            case (0x0) -> {
                 handleCase0();
                 pc += 2;
-                break;
-            case (0x1):
-                jumpToAddress();
-                break;
-            case (0x2):
-                callSubRoutine();
-                break;
-            case (0x3):
+            }
+            case (0x1) -> jumpToAddress();
+            case (0x2) -> callSubRoutine();
+            case (0x3) -> {
                 skipNextInstructionIfVXEqualsNN();
                 pc += 2;
-                break;
-            case (0x4):
+            }
+            case (0x4) -> {
                 skipNextInstructionIfVXNotEqualsNN();
                 pc += 2;
-                break;
-            case (0x5):
+            }
+            case (0x5) -> {
                 skipNextInstructionIfVXEqualsVY();
                 pc += 2;
-                break;
-            case (0x6):
+            }
+            case (0x6) -> {
                 setVXToNN();
                 pc += 2;
-                break;
-            case (0x7):
+            }
+            case (0x7) -> {
                 addNNToVX();
                 pc += 2;
-                break;
-            case (0x8):
+            }
+            case (0x8) -> {
                 handleCase8();
                 pc += 2;
-                break;
-            case (0x9):
+            }
+            case (0x9) -> {
                 skipNextInstructionIfVXNotEequalsVY();
                 pc += 2;
-                break;
-            case (0xA):
+            }
+            case (0xA) -> {
                 setIndexRegister();
                 pc += 2;
-                break;
-            case (0xB):
+            }
+            case (0xB) -> {
                 jumpToNNNPlusV0();
                 pc += 2;
-                break;
-            case (0xC):
+            }
+            case (0xC) -> {
                 setVXToRandAndNN();
                 pc += 2;
-                break;
-            case (0xD):
+            }
+            case (0xD) -> {
                 drawVXVY();
                 pc += 2;
-                break;
-            case (0xE):
+            }
+            case (0xE) -> {
                 handleCaseE();
                 pc += 2;
-                break;
-            case (0xF):
+            }
+            case (0xF) -> {
                 handleCaseF();
                 pc += 2;
-                break;
+            }
         }
 
 //        printDisplay();
@@ -147,33 +137,15 @@ public class CPU {
 
     private void handleCaseF() {
         switch (opcode & 0xFF) {
-            case 0x07:
-                storeDelayTimerInVX();
-                break;
-            case 0x0A:
-                waitForKeyPressAndStoreInVX();
-                break;
-            case 0x15:
-                setDelayTimerToVX();
-                break;
-            case 0x18:
-                setSoundTimerToVX();
-                break;
-            case 0x1E:
-                addVVToI();
-                break;
-            case 0x29:
-                setIToLocationOfValueInVX();
-                break;
-            case 0x33:
-                storeBCDInVXToMemory();
-                break;
-            case 0x55:
-                storeV0ThroughVXInMemory();
-                break;
-            case 0x65:
-                readMemoryIntoV0ThroughVX();
-                break;
+            case 0x07 -> storeDelayTimerInVX();
+            case 0x0A -> waitForKeyPressAndStoreInVX();
+            case 0x15 -> setDelayTimerToVX();
+            case 0x18 -> setSoundTimerToVX();
+            case 0x1E -> addVVToI();
+            case 0x29 -> setIToLocationOfValueInVX();
+            case 0x33 -> storeBCDInVXToMemory();
+            case 0x55 -> storeV0ThroughVXInMemory();
+            case 0x65 -> readMemoryIntoV0ThroughVX();
         }
     }
 
@@ -221,7 +193,7 @@ public class CPU {
     private void waitForKeyPressAndStoreInVX() {
         if (isAnyKeyPressed()) {
             int VX = (opcode >> 8) & 0xF;
-            registers[VX] = lastKeyPressed;
+            registers[VX] = key;
         } else {
             pc -= 2;
         }
@@ -238,12 +210,8 @@ public class CPU {
 
     private void handleCaseE() {
         switch (opcode & 0xFF) {
-            case 0x9E:
-                skipNextInstructionIfKeyVXPressed();
-                break;
-            case 0xA1:
-                skipNextInstructionIfKeyVXNotPressed();
-                break;
+            case 0x9E -> skipNextInstructionIfKeyVXPressed();
+            case 0xA1 -> skipNextInstructionIfKeyVXNotPressed();
         }
     }
 
@@ -349,33 +317,15 @@ public class CPU {
 
     private void handleCase8() {
         switch (opcode & 0xF) {
-            case 0x0:
-                setVXtoVY();
-                break;
-            case 0x1:
-                setVXtoVXorVY();
-                break;
-            case 0x2:
-                setVXtoVXandVY();
-                break;
-            case 0x3:
-                setVXtoVXxorVY();
-                break;
-            case 0x4:
-                addVYtoVX();
-                break;
-            case 0x5:
-                subtractVYfromVX();
-                break;
-            case 0x6:
-                rightShiftVX();
-                break;
-            case 0x7:
-                VYminusVX();
-                break;
-            case 0xE:
-                leftShiftVX();
-                break;
+            case 0x0 -> setVXtoVY();
+            case 0x1 -> setVXtoVXorVY();
+            case 0x2 -> setVXtoVXandVY();
+            case 0x3 -> setVXtoVXxorVY();
+            case 0x4 -> addVYtoVX();
+            case 0x5 -> subtractVYfromVX();
+            case 0x6 -> rightShiftVX();
+            case 0x7 -> VYminusVX();
+            case 0xE -> leftShiftVX();
         }
     }
 
