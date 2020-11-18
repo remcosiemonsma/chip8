@@ -1,6 +1,5 @@
 package nl.remcoder.emulator.chip8;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class CPU {
@@ -16,9 +15,9 @@ public class CPU {
     private int sp = 0;
     private int key = -1;
 
-    private Random random = new Random();
+    private final Random random = new Random();
     
-    private int[] chip8_fontset =
+    private final int[] chip8_fontset =
             {
                     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
                     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -56,17 +55,10 @@ public class CPU {
             //Data is stored as unsigned bytes, in Java everything is signed, AND-ing with 0xff effectively removes the sign
             memory[j] = romdata[i] & 0xFF;
         }
-
-        System.out.println("Romdata:");
-        for(int i = 0; i < memory.length; i++) {
-            System.out.println(Integer.toHexString(i) + ": " + Integer.toHexString(memory[i]));
-        }
     }
 
     public void emulateCycle() {
         fetchOpcode();
-
-        System.out.println("Opcode: " + Integer.toHexString(opcode));
 
         switch (opcode >> 12) {
             case (0x0) -> {
@@ -128,11 +120,6 @@ public class CPU {
                 pc += 2;
             }
         }
-
-//        printDisplay();
-
-        System.out.println("Register state:");
-        System.out.println(Arrays.toString(registers));
     }
 
     private void handleCaseF() {
@@ -469,19 +456,6 @@ public class CPU {
         opcode = memory[pc] << 8 | memory[pc + 1];
     }
 
-    private void printDisplay() {
-        System.out.println("DisplayState:");
-        for (boolean[] line : graphics) {
-            for (boolean pixel : line) {
-                if (pixel) {
-                    System.out.print('#');
-                } else {
-                    System.out.print(' ');
-                }
-            }
-            System.out.println();
-        }
-    }
 
     public boolean[][] getGraphics() {
         return graphics;

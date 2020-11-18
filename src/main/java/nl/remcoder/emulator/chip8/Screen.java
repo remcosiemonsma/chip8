@@ -19,7 +19,7 @@ public class Screen extends JPanel {
      */
     public void paintPixel(boolean white, int x, int y) {
         if (white) {
-            g.setColor(Color.WHITE);
+            g.setColor(Color.GREEN);
         } else {
             g.setColor(Color.BLACK);
         }
@@ -64,8 +64,5 @@ public class Screen extends JPanel {
         g.fillRect(0, 0, width, height);
 
         paintFullScreen();
-
-
-        //memory.printScreen();
     }
 }

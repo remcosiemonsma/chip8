@@ -14,21 +14,28 @@ public class Main {
 
         cpu.loadRom(Files.readAllBytes(Path.of(ClassLoader.getSystemResource("roms/CONNECT4").toURI())));
 
+
+        JFrame f = new JFrame("CHIP-8 emulator (Remcoder)");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
         JMenuBar mb = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenuItem load = new JMenuItem("Load ROM");
+        load.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.showOpenDialog(f);
+        });
         file.add(load);
         JMenuItem reset = new JMenuItem("Reset");
         file.add(reset);
         mb.add(file);
 
-        JFrame f = new JFrame("CHIP-8 emulator (Remcoder)");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Screen screen =  new Screen();
-        f.setJMenuBar(mb);
         f.add(screen);
         f.pack();
         f.setVisible(true);
+        f.setJMenuBar(mb);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
             switch (e.getID()) {
