@@ -63,7 +63,7 @@ class CPUThread implements Runnable {
         graphicsContext.fillRect(x * 10, y * 10, 10, 10);
     }
 
-    public void keyEventHandler(KeyEvent keyEvent) {
+    public void keyPressedHandler(KeyEvent keyEvent) {
         switch (keyEvent.getCode()) {
             case DIGIT1 -> cpu.setKey(0x1);
             case DIGIT2 -> cpu.setKey(0x2);
@@ -82,5 +82,9 @@ class CPUThread implements Runnable {
             case C -> cpu.setKey(0xB);
             case V -> cpu.setKey(0xF);
         }
+    }
+
+    public void keyReleasedHandler(KeyEvent keyEvent) {
+        cpu.setKey(-1);
     }
 }

@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -18,7 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 public class JavaFXMain extends Application {
@@ -26,14 +28,19 @@ public class JavaFXMain extends Application {
     private CPUThread cpuThread;
     private GraphicsContext gc;
     private Stage stage;
-    private Canvas canvas;
 
     @Override
-    public void start(Stage stage) throws URISyntaxException {
+    public void start(Stage stage) throws IOException {
         this.stage = stage;
         var root = new VBox();
-        canvas = new Canvas(640, 320);
+        var canvas = new Canvas(640, 320);
         gc = canvas.getGraphicsContext2D();
+
+        InputStream inputStream = ClassLoader.getSystemResource("Background.png").openStream();
+
+        Image image = new Image(inputStream);
+
+        gc.drawImage(image, 0, 0);
 
         MenuBar menuBar = createMenu();
 
@@ -47,8 +54,6 @@ public class JavaFXMain extends Application {
         stage.setTitle("Remcoders CHIP8 Emulator");
         stage.setScene(scene);
         stage.show();
-
-        loadRom(Path.of(ClassLoader.getSystemResource("roms/15PUZZLE").toURI()));
     }
 
     private MenuBar createMenu() {
@@ -72,12 +77,15 @@ public class JavaFXMain extends Application {
     }
 
     private void loadRom(Path pathToRom) {
-        if (cpuThread != null && cpuThread.isRunning()) {
-            cpuThread.stop();
-        }
+        stopCurrentApplication();
+        startNewApplication(pathToRom);
+    }
+
+    private void startNewApplication(Path pathToRom) {
         try {
             cpuThread = new CPUThread(gc, pathToRom);
-            canvas.setOnKeyPressed(keyEvent -> cpuThread.keyEventHandler(keyEvent));
+            stage.addEventHandler(KeyEvent.KEY_PRESSED, cpuThread::keyPressedHandler);
+            stage.addEventHandler(KeyEvent.KEY_RELEASED, cpuThread::keyReleasedHandler);
             Thread thread = new Thread(cpuThread);
             thread.start();
         } catch (IOException e) {
@@ -95,9 +103,19 @@ public class JavaFXMain extends Application {
         }
     }
 
+    private void stopCurrentApplication() {
+        if (cpuThread != null && cpuThread.isRunning()) {
+            stage.removeEventHandler(KeyEvent.KEY_PRESSED, cpuThread::keyPressedHandler);
+            stage.removeEventHandler(KeyEvent.KEY_RELEASED, cpuThread::keyReleasedHandler);
+            cpuThread.stop();
+        }
+    }
+
     @Override
     public void stop() throws Exception {
-        cpuThread.stop();
+        if (cpuThread != null) {
+            cpuThread.stop();
+        }
         super.stop();
     }
 
