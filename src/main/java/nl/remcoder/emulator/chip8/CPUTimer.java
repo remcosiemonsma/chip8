@@ -31,6 +31,7 @@ public class CPUTimer extends AnimationTimer {
         if (cpu.getSound_timer() > 0) {
             cpu.setSound_timer(cpu.getSound_timer() - 1);
         }
+        cpu.decrementDelayTimer();
     }
 
     private void paintScreen(boolean[][] graphics, GraphicsContext graphicsContext) {

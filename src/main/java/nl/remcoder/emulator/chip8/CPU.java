@@ -317,15 +317,17 @@ public class CPU {
         }
     }
 
+    //Opcode 8XYE
     private void leftShiftVX() {
+        //Take value X from opcode
         int VX = (opcode >> 8) & 0xF;
+        //Take value Y from opcode
         int VY = (opcode >> 4) & 0xF;
         registers[0xF] = (registers[VY] >> 7) & 0x1; //Most significant bit
-        registers[VY] <<= 1; // 8xyE - SHL Vx {, Vy}
-        if (registers[VY] > 255) {
-            registers[VY] -= 256;
+        registers[VX] = registers[VY] << 1;
+        if (registers[VX] > 255) {
+            registers[VX] -= 256;
         }
-        registers[VX] = registers[VY];
     }
 
     private void VYminusVX() {
@@ -344,11 +346,10 @@ public class CPU {
     }
 
     private void rightShiftVX() {
-        int VX = registers[opcode >> 8 & 0xF];
-        int VY = registers[opcode >> 4 & 0xF];
+        int VX = (opcode >> 8) & 0xF;
+        int VY = (opcode >> 4) & 0xF;
         registers[0xF] = registers[VY] & 0x1;
-        registers[VY] >>= 1;
-        registers[VX] = registers[VY];
+        registers[VX] = registers[VY] >> 1;
     }
 
     private void subtractVYfromVX() {
@@ -457,7 +458,6 @@ public class CPU {
         opcode = memory[pc] << 8 | memory[pc + 1];
     }
 
-
     public boolean[][] getGraphics() {
         return graphics;
     }
@@ -466,12 +466,10 @@ public class CPU {
         this.key = key;
     }
 
-    public int getDelay_timer() {
-        return delay_timer;
-    }
-
-    public void setDelay_timer(int delay_timer) {
-        this.delay_timer = delay_timer;
+    public void decrementDelayTimer() {
+        if (delay_timer > 0) {
+            delay_timer--;
+        }
     }
 
     public int getSound_timer() {
