@@ -37,7 +37,7 @@ public class CPU {
                     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
             };
 
-    public void initialize() {
+    public void reset() {
         pc = 0x200;
         opcode = 0;      // Reset current opcode
         I = 0;      // Reset index register
@@ -274,6 +274,7 @@ public class CPU {
             registers[0xF] = 1;
         } else {
             graphics[y][x] = true;
+            registers[0xF] = 0;
         }
     }
 
