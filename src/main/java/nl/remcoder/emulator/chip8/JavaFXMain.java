@@ -30,6 +30,7 @@ public class JavaFXMain extends Application {
     private CPU cpu;
     private Stage stage;
     private CPUTimer cpuTimer;
+    private File currentRom = new File("./");
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -76,6 +77,7 @@ public class JavaFXMain extends Application {
     private void selectAndLoadRom() {
         Path pathToRom = selectRom();
         if (pathToRom != null) {
+            currentRom = pathToRom.getParent().toFile();
             cpuTimer.stop();
             loadRom(pathToRom);
             cpuTimer.start();
@@ -84,6 +86,7 @@ public class JavaFXMain extends Application {
 
     private Path selectRom() {
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(currentRom);
         fileChooser.setTitle("Open Image");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
         File file = fileChooser.showOpenDialog(stage);
