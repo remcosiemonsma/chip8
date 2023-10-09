@@ -140,10 +140,10 @@ public class CPU {
      * Opcode FX65
      * Fill registers V0 to VX inclusive with the values stored in memory starting at address I
      * I is set to I + X + 1 after operation
-     *
+     * <p>
      * Copy the values stored in memory starting at the address indicated by the value in I into registers V0 through VX
      * Afterwards, set I to I + X + 1
-     *
+     * <p>
      * The opposite of FX55, here we copy from memory to the registers
      */
     private void readMemoryIntoV0ThroughVX() {
@@ -158,10 +158,10 @@ public class CPU {
      * Opcode FX55
      * Store the values of registers V0 to VX inclusive in memory starting at address I
      * I is set to I + X + 1 after operation
-     *
+     * <p>
      * Copy the values of register V0 to VX to memory, starting at the address indicated by the value in I
      * Afterwards, set I to I + X + 1
-     *
+     * <p>
      * The opposite of FX65, here we copy from the register to memory
      */
     private void storeV0ThroughVXInMemory() {
@@ -175,7 +175,7 @@ public class CPU {
     /**
      * Opcode FX33
      * Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I + 1, and I + 2
-     *
+     * <p>
      * The value in register VX contains a binary coded decimal, this needs to be stored in memory at the addresses
      * stated by value in I. This is most commonly used to print a value so a human can read it.
      */
@@ -191,7 +191,7 @@ public class CPU {
     /**
      * Opcode FX29
      * Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
-     *
+     * <p>
      * We want to draw one of the font sprites, so we set I to the value of register VX multiplied by 5, since each sprite
      * takes 5 bytes of memory.
      */
@@ -203,7 +203,7 @@ public class CPU {
     /**
      * Opcode FX1E
      * Add the value stored in register VX to register I
-     *
+     * <p>
      * Increment I with the value in register VX
      */
     private void addVXToI() {
@@ -214,7 +214,7 @@ public class CPU {
     /**
      * Opcode FX18
      * Set the sound timer to the value of register VX
-     *
+     * <p>
      * Set the sound timer to the value in register VX
      */
     private void setSoundTimerToVX() {
@@ -225,7 +225,7 @@ public class CPU {
     /**
      * Opcode FX15
      * Set the delay timer to the value of register VX
-     *
+     * <p>
      * Set the delay timer to the value in register VX
      */
     private void setDelayTimerToVX() {
@@ -236,7 +236,7 @@ public class CPU {
     /**
      * Opcode FX0A
      * Wait for a keypress and store the result in register VX
-     *
+     * <p>
      * Check if a key is pressed, if it is store the value of the key pressed in register VX, if it is not,
      * wait until it is. We do this by decrementing the program counter so.
      */
@@ -260,7 +260,7 @@ public class CPU {
     /**
      * Opcode FX07
      * Store the current value of the delay timer in register VX
-     *
+     * <p>
      * Take the value of the delay timer and store it in register VX
      */
     private void storeDelayTimerInVX() {
@@ -278,7 +278,7 @@ public class CPU {
     /**
      * Opcode EXA1
      * Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
-     *
+     * <p>
      * Check if the key designated by the value in register VX is not pressed, if it is not we skip the next instruction
      */
     private void skipNextInstructionIfKeyVXNotPressed() {
@@ -290,7 +290,7 @@ public class CPU {
     /**
      * Opcode EX9E
      * Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
-     *
+     * <p>
      * Check if the key designated by the value in register VX is pressed, if it is we skip the next instruction
      */
     private void skipNextInstructionIfKeyVXPressed() {
@@ -312,7 +312,7 @@ public class CPU {
      * Opcode DXYN
      * Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
      * Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
-     *
+     * <p>
      * Take the sprite data stored in the memory at the address at index I for a length of N bytes and draw this sprite
      * on screen at position VX, VY.
      */
@@ -354,7 +354,7 @@ public class CPU {
 
     /**
      * Turn the pixel at (x,y) on and set register VF to 1 if a pixel is switched from on to off
-     *
+     * <p>
      * @param x the x coord of the pixel
      * @param y the y coord of the pixel
      */
@@ -383,7 +383,7 @@ public class CPU {
     /**
      * Opcode CXNN
      * Set VX to a random number with a mask of NN
-     *
+     * <p>
      * Generate a random number (0-255), mask it with value NN, and store the resulting value in register VX
      */
     private void setVXToRandAndNN() {
@@ -396,7 +396,7 @@ public class CPU {
     /**
      * Opcode BNNN
      * Jump to address NNN + V0
-     *
+     * <p>
      * Set the opcodecounter to the value NNN added with the value in register 0
      */
     private void jumpToNNNPlusV0() {
@@ -406,7 +406,7 @@ public class CPU {
     /**
      * Opcode ANNN
      * Store memory address NNN in register I
-     *
+     * <p>
      * Set the index to the address NNN
      */
     private void setIndexRegister() {
@@ -416,10 +416,10 @@ public class CPU {
     /**
      * Opcode 9XY0
      * Skip the following instruction if the value of register VX is not equal to the value of register VY
-     *
+     * <p>
      * Check if the value in register VX is not equal to the value in register VY, if it is not, skip the next instruction by
      * incrementing the program counter
-     *
+     * <p>
      * Similar to 5XY0 but here we test for inequality
      */
     private void skipNextInstructionIfVXNotEequalsVY() {
@@ -450,7 +450,7 @@ public class CPU {
      * Store the value of register VY shifted left one bit in register VX
      * Set register VF to the most significant bit prior to the shift
      * VY is unchanged
-     *
+     * <p>
      * Take the value from register VY, store the most significant bit in register VF (so we know if a carry occurred)
      * then left shift the value 1 bit (so, multiply by 2) and store the resulting value in register VX
      */
@@ -469,10 +469,10 @@ public class CPU {
      * Set register VX to the value of VY minus VX
      * Set VF to 00 if a borrow occurs
      * Set VF to 01 if a borrow does not occur
-     *
+     * <p>
      * Take the value of VX and subtract it from the value in VY, if a borrow (i.e. an underflow) occurs we set VF to 1, if not we
      * set VF to 0
-     *
+     * <p>
      * Similar to 8XY5, but we subtract VX from VY
      */
     private void subtractVXfromVY() {
@@ -480,10 +480,10 @@ public class CPU {
         int VY = opcode >> 4 & 0xF;
         registers[VX] = registers[VY] - registers[VX];
         if (registers[VX] < 0) {
-            registers[0xF] = 1;
+            registers[0xF] = 0;
             registers[VX] += 256;
         } else {
-            registers[0xF] = 0;
+            registers[0xF] = 1;
         }
     }
 
@@ -492,7 +492,7 @@ public class CPU {
      * Store the value of register VY shifted right one bit in register VX
      * Set register VF to the least significant bit prior to the shift
      * VY is unchanged
-     *
+     * <p>
      * Take the value from register VY, store the least significant bit in register VF (so we know the value was even or odd)
      * then right shift the value 1 bit (so, divide by 2) and store the resulting value in register VX
      */
@@ -508,10 +508,10 @@ public class CPU {
      * Subtract the value of register VY from register VX
      * Set VF to 00 if a borrow occurs
      * Set VF to 01 if a borrow does not occur
-     *
+     * <p>
      * Take the value of VY and subtract it from the value in VX, if a borrow (i.e. an underflow) occurs we set VF to 1, if not we
      * set VF to 0
-     *
+     * <p>
      * Similar to 8XY7 but we subtract VY from VX
      */
     private void subtractVYfromVX() {
@@ -519,10 +519,10 @@ public class CPU {
         int VY = opcode >> 4 & 0xF;
         registers[VX] -= registers[VY];
         if (registers[VX] < 0) {
-            registers[0xF] = 1;
+            registers[0xF] = 0;
             registers[VX] += 256;
         } else {
-            registers[0xF] = 0;
+            registers[0xF] = 1;
         }
     }
 
@@ -531,7 +531,7 @@ public class CPU {
      * Add the value of register VY to register VX
      * Set VF to 01 if a carry occurs
      * Set VF to 00 if a carry does not occur
-     *
+     * <p>
      * Take the value of VY and add it to the value in VX, if a carry (i.e. an overflow) occurs we set VF to 1, if not we
      * set VF to 0
      */
@@ -551,7 +551,7 @@ public class CPU {
     /**
      * Opcode 8XY3
      * Set VX to VX XOR VY
-     *
+     * <p>
      * Take the value from register VX, and perform a binary XOR on it with the value from register VY and store the
      * resulting value in register VX
      */
@@ -564,7 +564,7 @@ public class CPU {
     /**
      * Opcode 8XY2
      * Set VX to VX AND VY
-     *
+     * <p>
      * Take the value from register VX, and perform a binary AND on it with the value from register VY and store the
      * resulting value in register VX
      */
@@ -577,7 +577,7 @@ public class CPU {
     /**
      * Opcode 8XY1
      * Set VX to VX OR VY
-     *
+     * <p>
      * Take the value from register VX, and perform a binary OR on it with the value from register VY and store the
      * resulting value in register VX
      */
@@ -590,7 +590,7 @@ public class CPU {
     /**
      * Opcode 8XY0
      * Store the value of register VY in register VX
-     *
+     * <p>
      * Take the value stored in register VY and store it in register VX
      */
     private void setVXtoVY() {
@@ -602,7 +602,7 @@ public class CPU {
     /**
      * Opcode 7XNN
      * Add the value NN to register VX
-     *
+     * <p>
      * Add the value provided by NN to the value in register VX
      */
     private void addNNToVX() {
@@ -617,7 +617,7 @@ public class CPU {
     /**
      * Opcode 6XNN
      * Store number NN in register VX
-     *
+     * <p>
      * Store the value provided by NN in register VX
      */
     private void setVXToNN() {
@@ -629,10 +629,10 @@ public class CPU {
     /**
      * Opcode 5XY0
      * Skip the following instruction if the value of register VX is equal to the value of register VY
-     *
+     * <p>
      * Check if the value in register VX is equal to the value in register VY, if it is, skip the next instruction by
      * incrementing the program counter
-     *
+     * <p>
      * Similar to 3XNN, but now with another register for comparison
      * Similar to 9XY0, but now we test for equality
      */
@@ -645,10 +645,10 @@ public class CPU {
     /**
      * Opcode 4XNN
      * Skip the following instruction if the value of register VX does not equals NN
-     *
+     * <p>
      * Check if the value in register VX is not equal to the value provided by NN, if it is not, skip the next instruction by
      * incrementing the program counter
-     *
+     * <p>
      * (The reverse of 3XNN)
      */
     private void skipNextInstructionIfVXNotEqualsNN() {
@@ -662,7 +662,7 @@ public class CPU {
     /**
      * Opcode 3XNN
      * Skip the following instruction if the value of register VX equals NN
-     *
+     * <p>
      * Check if the value in register VX is equal to the value provided by NN, if it is, skip the next instruction by
      * incrementing the program counter
      * (The reverse of 4XNN)
@@ -678,7 +678,7 @@ public class CPU {
     /**
      * Opcode 2NNN
      * Execute subroutine starting at address NNN
-     *
+     * <p>
      * Address NNN is a memory address, store the current program counter in the program counter stack and then
      * set the program counter to NNN
      */
@@ -690,7 +690,7 @@ public class CPU {
     /**
      * Opcode 1NNN
      * Jump to adress NNN
-     *
+     * <p>
      * Address NNN is a memory address, just set the program counter to this value and continue from there
      */
     private void jumpToAddress() {
@@ -698,22 +698,18 @@ public class CPU {
     }
 
     private void handleCase0() {
-        switch(opcode) {
-            case (0X00E0):
-                clearScreen();
-                break;
-            case (0x00EE):
-                returnFromSubroutine();
-                break;
-            default:
-                break;
+        switch (opcode) {
+            case (0X00E0) -> clearScreen();
+            case (0x00EE) -> returnFromSubroutine();
+            default -> {
+            }
         }
     }
 
     /**
      * Opcode 00EE
      * Return from subroutine
-     *
+     * <p>
      * The CHIP-8 uses a stack pointer to keep track of subroutines, when a subroutine ends simply set the program counter
      * back to the value of the program counter when the subroutine was called.
      */
@@ -724,7 +720,7 @@ public class CPU {
     /**
      * Opcode 00E0
      * Clear the screen
-     *
+     * <p>
      * As it says, clear the screen. Easiest done by just creating a new boolean grid :)
      */
     private void clearScreen() {
