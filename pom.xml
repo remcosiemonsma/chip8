@@ -12,7 +12,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>15.0.1</version>
+            <version>20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>20</version>
         </dependency>
 
         <dependency>
@@ -30,13 +35,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>15</release>
+                    <release>20</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>0.0.8</version>
                 <configuration>
                     <mainClass>nl.remcoder.emulator.chip8.JavaFXMain</mainClass>
                 </configuration>
@@ -45,6 +50,6 @@
     </build>
 
     <properties>
-        <maven.compiler.release>15</maven.compiler.release>
+        <maven.compiler.release>20</maven.compiler.release>
     </properties>
 </project>
