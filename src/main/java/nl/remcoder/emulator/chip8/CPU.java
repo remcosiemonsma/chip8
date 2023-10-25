@@ -52,7 +52,6 @@ public class CPU {
 
     public void loadRom(byte[] romdata) {
         for (int i = 0, j = 0x200; i < romdata.length; i++, j++) {
-            //Data is stored as unsigned bytes, in Java everything is signed, AND-ing with 0xff effectively removes the sign
             memory[j] = romdata[i] & 0xFF;
         }
     }

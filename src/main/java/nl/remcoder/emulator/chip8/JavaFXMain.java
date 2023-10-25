@@ -29,6 +29,7 @@ public class JavaFXMain extends Application {
 
     private CPU cpu;
     private Stage stage;
+    private DisplayTimer displayTimer;
     private CPUTimer cpuTimer;
     private File currentRom = new File("./");
 
@@ -62,8 +63,10 @@ public class JavaFXMain extends Application {
         stage.setTitle("Remcoders CHIP8 Emulator");
         stage.setScene(scene);
         stage.show();
-
-        cpuTimer = new CPUTimer(canvas.getGraphicsContext2D(), cpu);
+        
+        cpuTimer = new CPUTimer(cpu);
+        
+        displayTimer = new DisplayTimer(canvas.getGraphicsContext2D(), cpu);
     }
 
     private MenuBar createMenu() {
@@ -79,7 +82,9 @@ public class JavaFXMain extends Application {
         if (pathToRom != null) {
             currentRom = pathToRom.getParent().toFile();
             cpuTimer.stop();
+            displayTimer.stop();
             loadRom(pathToRom);
+            displayTimer.start();
             cpuTimer.start();
         }
     }
