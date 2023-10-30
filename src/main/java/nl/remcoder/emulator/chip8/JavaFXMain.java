@@ -31,7 +31,7 @@ public class JavaFXMain extends Application {
     private Stage stage;
     private DisplayTimer displayTimer;
     private CPUTimer cpuTimer;
-    private File currentRom = new File("./");
+    private File currentRom = new File("./src/main/resources/roms/");
 
     @Override
     public void start(Stage stage) throws IOException {
