@@ -7,12 +7,12 @@ public class CPU {
     private int[] memory = new int[4096];
     private int[] registers = new int[16];
     private int I = 0;
-    private int pc = 0;
+    private int programCounter = 0;
     private boolean[][] graphics = new boolean[32][64];
-    private int delay_timer = 0;
-    private int sound_timer = 0;
+    private int delayTimer = 0;
+    private int soundTimer = 0;
     private int[] stack = new int[16];
-    private int sp = 0;
+    private int stackPointer = 0;
     private int key = -1;
 
     private final Random random = new Random();
@@ -38,10 +38,10 @@ public class CPU {
             };
 
     public void reset() {
-        pc = 0x200;
+        programCounter = 0x200;
         opcode = 0;      // Reset current opcode
         I = 0;      // Reset index register
-        sp = 0;      // Reset stack pointer
+        stackPointer = 0;      // Reset stack pointer
         graphics = new boolean[32][64];
         stack = new int[16];
         registers = new int[16];
@@ -58,65 +58,67 @@ public class CPU {
 
     public void emulateCycle() {
         fetchOpcode();
+        decrementDelayTimer();
+        decrementSoundTimer();
 
         switch (opcode >> 12) {
             case (0x0) -> {
                 handleCase0();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x1) -> jumpToAddress();
             case (0x2) -> callSubRoutine();
             case (0x3) -> {
                 skipNextInstructionIfVXEqualsNN();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x4) -> {
                 skipNextInstructionIfVXNotEqualsNN();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x5) -> {
                 skipNextInstructionIfVXEqualsVY();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x6) -> {
                 setVXToNN();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x7) -> {
                 addNNToVX();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x8) -> {
                 handleCase8();
-                pc += 2;
+                programCounter += 2;
             }
             case (0x9) -> {
                 skipNextInstructionIfVXNotEequalsVY();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xA) -> {
                 setIndexRegister();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xB) -> {
                 jumpToNNNPlusV0();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xC) -> {
                 setVXToRandAndNN();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xD) -> {
                 drawVXVY();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xE) -> {
                 handleCaseE();
-                pc += 2;
+                programCounter += 2;
             }
             case (0xF) -> {
                 handleCaseF();
-                pc += 2;
+                programCounter += 2;
             }
         }
     }
@@ -218,7 +220,7 @@ public class CPU {
      */
     private void setSoundTimerToVX() {
         int VX = (opcode >> 8) & 0xF;
-        sound_timer = registers[VX];
+        soundTimer = registers[VX];
     }
 
     /**
@@ -229,7 +231,7 @@ public class CPU {
      */
     private void setDelayTimerToVX() {
         int VX = (opcode >> 8) & 0xF;
-        delay_timer = registers[VX];
+        delayTimer = registers[VX];
     }
 
     /**
@@ -244,7 +246,7 @@ public class CPU {
             int VX = (opcode >> 8) & 0xF;
             registers[VX] = key;
         } else {
-            pc -= 2;
+            programCounter -= 2;
         }
     }
 
@@ -264,7 +266,7 @@ public class CPU {
      */
     private void storeDelayTimerInVX() {
         int VX = (opcode >> 8) & 0xF;
-        registers[VX] = delay_timer;
+        registers[VX] = delayTimer;
     }
 
     private void handleCaseE() {
@@ -282,7 +284,7 @@ public class CPU {
      */
     private void skipNextInstructionIfKeyVXNotPressed() {
         if (!isKeyVXPressed()) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -294,7 +296,7 @@ public class CPU {
      */
     private void skipNextInstructionIfKeyVXPressed() {
         if (isKeyVXPressed()) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -399,7 +401,7 @@ public class CPU {
      * Set the opcodecounter to the value NNN added with the value in register 0
      */
     private void jumpToNNNPlusV0() {
-        pc = (opcode & 0xFFF) + registers[0];
+        programCounter = (opcode & 0xFFF) + registers[0];
     }
 
     /**
@@ -426,7 +428,7 @@ public class CPU {
         int VY = (opcode >> 4) & 0xF;
 
         if(registers[VX] != registers[VY]) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -637,7 +639,7 @@ public class CPU {
      */
     private void skipNextInstructionIfVXEqualsVY() {
         if(registers[opcode >> 8 & 0xF] == registers[opcode >> 4 & 0xF]) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -654,7 +656,7 @@ public class CPU {
         int VX = (opcode >> 8) & 0xF;
         int NN = opcode & 0xFF;
         if(registers[VX] != NN) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -670,7 +672,7 @@ public class CPU {
         int VX = (opcode >> 8) & 0xF;
         int NN = opcode & 0xFF;
         if(registers[VX] == NN) {
-            pc += 2;
+            programCounter += 2;
         }
     }
 
@@ -682,7 +684,7 @@ public class CPU {
      * set the program counter to NNN
      */
     private void callSubRoutine() {
-        stack[++sp] = pc;
+        stack[++stackPointer] = programCounter;
         jumpToAddress();
     }
 
@@ -693,7 +695,7 @@ public class CPU {
      * Address NNN is a memory address, just set the program counter to this value and continue from there
      */
     private void jumpToAddress() {
-        pc = opcode & 0xFFF;
+        programCounter = opcode & 0xFFF;
     }
 
     private void handleCase0() {
@@ -713,7 +715,7 @@ public class CPU {
      * back to the value of the program counter when the subroutine was called.
      */
     private void returnFromSubroutine() {
-        pc = stack[sp--]; //<-- possible implementation?
+        programCounter = stack[stackPointer--];
     }
 
     /**
@@ -727,7 +729,7 @@ public class CPU {
     }
 
     private void fetchOpcode() {
-        opcode = memory[pc] << 8 | memory[pc + 1];
+        opcode = memory[programCounter] << 8 | memory[programCounter + 1];
     }
 
     public boolean[][] getGraphics() {
@@ -738,17 +740,19 @@ public class CPU {
         this.key = key;
     }
 
-    public void decrementDelayTimer() {
-        if (delay_timer > 0) {
-            delay_timer--;
+    private void decrementDelayTimer() {
+        if (delayTimer > 0) {
+            delayTimer--;
         }
     }
 
-    public int getSound_timer() {
-        return sound_timer;
+    public int getSoundTimer() {
+        return soundTimer;
     }
 
-    public void setSound_timer(int sound_timer) {
-        this.sound_timer = sound_timer;
+    private void decrementSoundTimer() {
+        if (soundTimer > 0) {
+            soundTimer--;
+        }
     }
 }

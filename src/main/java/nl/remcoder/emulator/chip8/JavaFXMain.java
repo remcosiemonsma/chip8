@@ -1,6 +1,7 @@
 package nl.remcoder.emulator.chip8;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -32,6 +33,7 @@ public class JavaFXMain extends Application {
     private DisplayTimer displayTimer;
     private CPUTimer cpuTimer;
     private File currentRom = new File("./src/main/resources/roms/");
+    private AudioPlayer audioPlayer;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -63,16 +65,24 @@ public class JavaFXMain extends Application {
         stage.setTitle("Remcoders CHIP8 Emulator");
         stage.setScene(scene);
         stage.show();
-        
-        cpuTimer = new CPUTimer(cpu);
-        
+
+        audioPlayer = new AudioPlayer();
+
+        cpuTimer = new CPUTimer(cpu, audioPlayer);
+
         displayTimer = new DisplayTimer(canvas.getGraphicsContext2D(), cpu);
+
+        stage.setOnCloseRequest(_ -> {
+            cpuTimer.stop();
+            audioPlayer.stopSound();
+            Platform.exit();
+        });
     }
 
     private MenuBar createMenu() {
         Menu fileMenu = new Menu("File");
         MenuItem openMenuItem = new MenuItem("Open");
-        openMenuItem.setOnAction(event -> selectAndLoadRom());
+        openMenuItem.setOnAction(_ -> selectAndLoadRom());
         fileMenu.getItems().add(openMenuItem);
         return new MenuBar(fileMenu);
     }
@@ -81,11 +91,12 @@ public class JavaFXMain extends Application {
         Path pathToRom = selectRom();
         if (pathToRom != null) {
             currentRom = pathToRom.getParent().toFile();
-            cpuTimer.stop();
             displayTimer.stop();
+            cpuTimer.stop();
+            audioPlayer.stopSound();
             loadRom(pathToRom);
-            displayTimer.start();
             cpuTimer.start();
+            displayTimer.start();
         }
     }
 
@@ -93,7 +104,7 @@ public class JavaFXMain extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(currentRom);
         fileChooser.setTitle("Open Image");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*"));
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             return file.toPath();
@@ -146,7 +157,7 @@ public class JavaFXMain extends Application {
         cpu.setKey(-1);
     }
 
-    public static void main(String[] args) {
+    static void main() {
         launch();
     }
 }

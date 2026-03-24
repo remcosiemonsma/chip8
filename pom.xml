@@ -12,12 +12,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>20</version>
+            <version>25.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>20</version>
+            <version>25.0.2</version>
         </dependency>
 
         <dependency>
@@ -35,7 +35,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>20</release>
+                    <release>25</release>
                 </configuration>
             </plugin>
             <plugin>
